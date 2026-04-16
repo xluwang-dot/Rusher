@@ -1,0 +1,92 @@
+# FastGithub Rust 默认配置
+
+[general]
+# 日志级别: trace, debug, info, warn, error
+log_level = "info"
+# 日志文件路径，留空则输出到控制台
+log_file = "fastgithub.log"
+# 是否以守护进程模式运行
+daemon = false
+
+[dns]
+# DNS 监听地址
+listen_addr = "0.0.0.0:53"
+# DNS 缓存生存时间（秒）
+cache_ttl = 300
+# 是否启用 IPv6
+enable_ipv6 = false
+# 上游 DNS 服务器
+upstream_dns = ["8.8.8.8:53", "1.1.1.1:53"]
+# 是否启用 DNS over HTTPS
+doh_enabled = false
+# DNS over HTTPS 端点
+doh_endpoint = "https://cloudflare-dns.com/dns-query"
+
+[scanner]
+# 全量扫描间隔（秒）
+scan_interval = 300
+# 扫描超时时间（秒）
+scan_timeout = 10
+# 最大并发连接数
+max_concurrent = 100
+# 重试次数
+retry_count = 3
+# 连接超时（秒）
+connect_timeout = 5
+# 请求超时（秒）
+request_timeout = 10
+# 是否启用增量扫描
+incremental_scan = true
+# 增量扫描间隔（秒）
+incremental_interval = 60
+
+[github]
+# GitHub Meta API 地址
+meta_url = "https://api.github.com/meta"
+# 需要加速的 GitHub 域名
+domains = [
+    "github.com",
+    "github.global.ssl.fastly.net",
+    "raw.githubusercontent.com",
+    "gist.github.com",
+    "github.io",
+    "githubusercontent.com",
+    "githubassets.com",
+    "github.dev"
+]
+# 自定义 IP 范围（CIDR格式），留空则使用 GitHub Meta API
+custom_ranges = []
+# 是否启用 GitHub API 认证
+api_auth_enabled = false
+# GitHub API Token（如果需要认证）
+api_token = ""
+
+[http]
+# User-Agent 头
+user_agent = "FastGithub-Rust/1.0"
+# 连接池大小
+connection_pool_size = 100
+# 是否启用 HTTP/2
+http2_enabled = true
+# 是否启用压缩
+compression_enabled = true
+# 代理设置，留空则不使用代理
+proxy = ""
+
+[cache]
+# 扫描结果缓存大小
+scan_cache_size = 10000
+# DNS 缓存大小
+dns_cache_size = 1000
+# 缓存过期时间（秒）
+cache_expiry = 3600
+
+[monitoring]
+# 是否启用监控
+enabled = false
+# 监控端口
+port = 9090
+# 监控端点路径
+path = "/metrics"
+# 是否启用健康检查
+health_check = true
