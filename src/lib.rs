@@ -94,22 +94,13 @@ pub async fn run_app(config: Config) -> Result<()> {
     // 启动 DNS 服务器
     println!("启动 DNS 服务器...");
     
-    // 由于沙箱环境限制，我们无法绑定 53 端口
-    // 让我们修改配置，使用一个非特权端口
-    let mut modified_config = (*config_arc).clone();
-    // 注意：这里我们需要解析 SocketAddr
-    modified_config.dns.listen_addr = "127.0.0.1:5353".parse().map_err(|e| {
-        crate::error::RusherError::ConfigError(format!("解析监听地址失败: {}", e))
-    })?;
-    
-    let modified_config_arc = Arc::new(modified_config);
-    
     // 创建 DNS 缓存（暂时不使用）
     let _dns_cache = Arc::new(dns::cache::DnsCache::new(
-        modified_config_arc.clone(),
+        config_arc.clone(),
     ));
     
-    println!("服务已启动，监听地址: 127.0.0.1:5353");
+    // 显示实际的监听地址
+    println!("服务已启动，监听地址: {}", config_arc.dns.listen_addr);
     println!("注意：DNS 服务正在启动中...");
     println!("等待关机信号 (Ctrl+C)...");
     
