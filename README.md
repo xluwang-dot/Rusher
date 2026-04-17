@@ -57,13 +57,7 @@ rusher help
 默认配置文件位置：
 - `./config/default.toml`
 - `./config/development.toml`
-- `/etc/fastgithub/config.toml`
 
-也可以通过环境变量配置：
-```bash
-export FASTGITHUB__GENERAL__LOG_LEVEL=debug
-export FASTGITHUB__DNS__LISTEN_ADDR=127.0.0.1:5353
-```
 
 ## 配置说明
 
@@ -187,7 +181,7 @@ cargo fmt
 
 ### 系统服务（Systemd）
 
-创建服务文件 `/etc/systemd/system/fastgithub.service`：
+创建服务文件 `/etc/systemd/system/rusher.service`：
 
 ```ini
 [Unit]
@@ -196,10 +190,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=fastgithub
-Group=fastgithub
-WorkingDirectory=/opt/fastgithub
-ExecStart=/usr/local/bin/rusher start --config /etc/fastgithub/config.toml
+WorkingDirectory=/opt/rusher
+ExecStart=/usr/local/bin/rusher start --config /etc/rusher/config.toml
 Restart=on-failure
 RestartSec=5
 
@@ -210,33 +202,16 @@ WantedBy=multi-user.target
 启用并启动服务：
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable fastgithub
-sudo systemctl start fastgithub
-sudo systemctl status fastgithub
-```
+sudo systemctl enable rusher
+sudo systemctl start rusher
+sudo systemctl status rusher
 
-### Docker 部署
 
-创建 Dockerfile：
-```dockerfile
-FROM rust:1.70 as builder
-WORKDIR /app
-COPY . .
-RUN cargo build --release
-
-FROM debian:bullseye-slim
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/rusher /usr/local/bin/fastgithub
-COPY config/default.toml /etc/fastgithub/config.toml
-EXPOSE 53/udp 53/tcp
-USER nobody
-CMD ["fastgithub", "start", "--config", "/etc/fastgithub/config.toml"]
-```
 
 构建和运行：
 ```bash
 docker build -t rusher .
-docker run -d --name rusher -p 53:53/udp -p 53:53/tcp fastgithub
+docker run -d --name rusher -p 53:53/udp -p 53:53/tcp rusher
 ```
 
 ## 性能优化
@@ -313,11 +288,11 @@ curl http://localhost:9090/health
 
 ## 致谢
 
-- 感谢原 .NET 版本 [Rusher](https://github.com/dotnetcore/Rusher) 的启发
+- 感谢原 .NET 版本 [FastGithub](https://github.com/dotnetcore/FastGithub) 的启发
 - 感谢所有贡献者和用户的支持
 
 ## 联系方式
 
-- 项目主页：https://github.com/yourusername/rusher
-- 问题反馈：https://github.com/yourusername/rusher/issues
-- 讨论区：https://github.com/yourusername/rusher/discussions
+- 项目主页：https://github.com/xluwang-dot/rusher
+- 问题反馈：https://github.com/xluwang-dot/rusher/issues
+- 讨论区：https://github.com/xluwang-dot/rusher/discussions
