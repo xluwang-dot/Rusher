@@ -113,7 +113,7 @@ impl IpScanner {
         config: Arc<Config>,
         cache: Arc<ScanCache>,
         github_client: Arc<GithubApiClient>,
-        http_client: Arc<HttpClient>,
+        http_client: Arc<dyn crate::http::HttpClientTrait + Send + Sync>,
     ) -> Self {
         Self {
             config,

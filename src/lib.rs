@@ -14,6 +14,9 @@ pub mod counter;
 pub use error::{RusherError, Result};
 pub use config::{Config, ConfigLoader};
 pub use utils::{logging, signal};
+pub use http::HttpClient;
+pub use scanner::{IpScanner, GithubApiClient};
+pub use dns::{DnsServer, DnsCache, DnsResolver};
 
 /// Rusher 版本信息
 pub const VERSION: &str = "0.1.0";
@@ -94,20 +97,64 @@ pub async fn run_app(config: Config) -> Result<()> {
     // 启动 DNS 服务器
     println!("启动 DNS 服务器...");
     
-    // 创建 DNS 缓存（暂时不使用）
-    let _dns_cache = Arc::new(dns::cache::DnsCache::new(
+    // 创建 HTTP 客户端
+    let http_client = Arc::new(http::HttpClient::new(config_arc.clone())?);
+    
+    // 创建 GitHub API 客户端
+    let github_client = Arc::new(scanner::github::GithubApiClient::new(config_arc.clone())?);
+    
+    // 创建扫描缓存
+    let scan_cache = Arc::new(scanner::cache::ScanCache::new(config_arc.clone()));
+    
+    // 创建 IP 扫描器
+    let scanner = Arc::new(scanner::IpScanner::new(
         config_arc.clone(),
+        scan_cache,
+        github_client,
+        http_client,
     ));
+    
+    // 启动扫描器
+    scanner.start().await?;
+    
+    // 创建 DNS 缓存
+    let dns_cache = Arc::new(dns::cache::DnsCache::new(config_arc.clone()));
+    
+    // 创建 DNS 解析器
+    let dns_resolver = Arc::new(dns::resolver::DnsResolver::new(
+        config_arc.clone(),
+        scanner.clone(),
+    ));
+    
+    // 创建并启动 DNS 服务器
+    let mut dns_server = dns::server::DnsServer::new(
+        config_arc.clone(),
+        dns_cache,
+        dns_resolver,
+    );
+    
+    // 在后台启动 DNS 服务器
+    let dns_server_handle = tokio::spawn(async move {
+        if let Err(e) = dns_server.start().await {
+            eprintln!("DNS 服务器启动失败: {}", e);
+        }
+    });
     
     // 显示实际的监听地址
     println!("服务已启动，监听地址: {}", config_arc.dns.listen_addr);
-    println!("注意：DNS 服务正在启动中...");
     println!("等待关机信号 (Ctrl+C)...");
     
     // 等待关机信号
     signal_handler.wait_for_shutdown().await;
     
     println!("收到关机信号，开始关闭服务...");
+    
+    // 停止扫描器
+    scanner.stop().await?;
+    
+    // 等待 DNS 服务器停止
+    dns_server_handle.abort();
+    
     println!("服务已关闭");
     Ok(())
 }
