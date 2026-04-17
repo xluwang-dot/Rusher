@@ -1,4 +1,4 @@
-# FastGithub Rust 开发环境配置
+# Rusher Rust 开发环境配置
 
 [general]
 log_level = "debug"
@@ -33,7 +33,7 @@ api_auth_enabled = false
 api_token = ""
 
 [http]
-user_agent = "FastGithub-Rust/Dev"
+user_agent = "Rusher-Rust/Dev"
 connection_pool_size = 20
 http2_enabled = true
 compression_enabled = true

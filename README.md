@@ -71,7 +71,7 @@ export FASTGITHUB__DNS__LISTEN_ADDR=127.0.0.1:5353
 ```toml
 [general]
 log_level = "info"           # 日志级别: trace, debug, info, warn, error
-log_file = "fastgithub.log"  # 日志文件路径，留空则输出到控制台
+log_file = "rusher.log"  # 日志文件路径，留空则输出到控制台
 daemon = false               # 是否以守护进程模式运行
 ```
 
@@ -272,14 +272,14 @@ panic = "abort"
 
 ```bash
 # 查看实时日志
-tail -f fastgithub.log
+tail -f rusher.log
 
 # 根据日志级别过滤
-grep "ERROR" fastgithub.log
-grep "WARN" fastgithub.log
+grep "ERROR" rusher.log
+grep "WARN" rusher.log
 
 # 查看最近错误
-tail -100 fastgithub.log | grep -E "(ERROR|WARN)"
+tail -100 rusher.log | grep -E "(ERROR|WARN)"
 ```
 
 ### 性能监控
