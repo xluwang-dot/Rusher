@@ -13,14 +13,23 @@ use crate::error::{RusherError, Result};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GithubMetaResponse {
     /// GitHub 的 IP 地址范围
+    #[serde(default)]
     pub hooks: Vec<String>,
+    #[serde(default)]
     pub web: Vec<String>,
+    #[serde(default)]
     pub api: Vec<String>,
+    #[serde(default)]
     pub git: Vec<String>,
+    #[serde(default)]
     pub packages: Vec<String>,
+    #[serde(default)]
     pub pages: Vec<String>,
+    #[serde(default)]
     pub importer: Vec<String>,
+    #[serde(default)]
     pub actions: Vec<String>,
+    #[serde(default)]
     pub dependabot: Vec<String>,
 }
 

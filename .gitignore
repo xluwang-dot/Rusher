@@ -1,6 +1,9 @@
-Cargo.lock
+*.lock
 *.log
+*.log.*
 *.tmp
+*.bk
+
 .env
 .DS_Store
 

@@ -11,7 +11,6 @@ use tracing::{debug, error, info, warn};
 
 use crate::config::Config;
 use crate::error::{RusherError, Result};
-use crate::http::HttpClient;
 use super::cache::ScanCache;
 use super::github::GithubApiClient;
 

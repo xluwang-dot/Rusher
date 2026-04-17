@@ -35,6 +35,10 @@ pub enum RusherError {
     #[error("URL 解析错误: {0}")]
     UrlParseError(#[from] url::ParseError),
     
+    /// HTTP 客户端错误（来自 HTTP 模块）
+    #[error("HTTP 客户端错误: {0}")]
+    HttpClientError(crate::http::HttpError),
+    
     /// 扫描错误
     #[error("扫描错误: {0}")]
     ScanError(String),
@@ -54,6 +58,12 @@ pub enum RusherError {
 
 /// 结果类型别名
 pub type Result<T> = std::result::Result<T, RusherError>;
+
+impl From<crate::http::HttpError> for RusherError {
+    fn from(error: crate::http::HttpError) -> Self {
+        RusherError::HttpClientError(error)
+    }
+}
 
 /// 错误转换工具
 pub trait ErrorExt<T> {

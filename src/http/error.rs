@@ -71,6 +71,7 @@ impl From<crate::error::RusherError> for HttpError {
             crate::error::RusherError::HttpError(msg) => Self::HttpError(msg),
             crate::error::RusherError::ParseError(msg) => Self::ParseError(msg),
             crate::error::RusherError::UrlParseError(e) => Self::UrlError(e),
+            crate::error::RusherError::HttpClientError(e) => e,
             crate::error::RusherError::ScanError(msg) => Self::Other(format!("扫描错误: {}", msg)),
             crate::error::RusherError::CacheError(msg) => Self::Other(format!("缓存错误: {}", msg)),
             crate::error::RusherError::SystemError(msg) => Self::Other(format!("系统错误: {}", msg)),

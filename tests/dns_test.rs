@@ -12,8 +12,7 @@ async fn main() -> Result<()> {
     
     // 加载测试配置
     println!("加载测试配置...");
-    let config_loader = ConfigLoader::new();
-    let config = config_loader.load_from_path("config/test.toml")?;
+    let config = ConfigLoader::load_from_path("config/test.toml")?;
     
     // 验证配置
     rusher::config::loader::utils::validate_config(&config)?;
@@ -88,7 +87,7 @@ async fn main() -> Result<()> {
     
     // 测试 DNS 查询
     println!("\n测试 DNS 查询...");
-    test_dns_query(&config_arc.dns.listen_addr).await?;
+    test_dns_query(&config_arc.dns.listen_addr.to_string()).await?;
     
     // 等待用户按 Ctrl+C
     println!("\n等待 10 秒后自动停止测试...");
@@ -110,6 +109,7 @@ async fn main() -> Result<()> {
 async fn test_dns_query(listen_addr: &str) -> Result<()> {
     use hickory_proto::op::{Message, Query};
     use hickory_proto::rr::{Name, RecordType};
+    use hickory_proto::serialize::binary::{BinEncodable, BinDecodable};
     use std::net::UdpSocket;
     use std::time::Duration;
     
