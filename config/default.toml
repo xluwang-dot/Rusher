@@ -26,7 +26,7 @@ doh_endpoint = "https://cloudflare-dns.com/dns-query"
 # 全量扫描间隔（秒）
 scan_interval = 300
 # 扫描超时时间（秒）
-scan_timeout = 10
+scan_timeout = 5
 # 最大并发连接数
 max_concurrent = 100
 # 重试次数
@@ -39,6 +39,8 @@ request_timeout = 10
 incremental_scan = true
 # 增量扫描间隔（秒）
 incremental_interval = 60
+# 每个 CIDR 范围最大提取的 IP 数量
+max_ips_per_cidr = 10
 
 [github]
 # GitHub Meta API 地址

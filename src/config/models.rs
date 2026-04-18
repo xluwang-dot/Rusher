@@ -65,6 +65,9 @@ pub struct ScannerConfig {
     
     /// 增量扫描间隔（秒）
     pub incremental_interval: u64,
+    
+    /// 每个 CIDR 范围最大提取的 IP 数量
+    pub max_ips_per_cidr: usize,
 }
 
 /// GitHub 配置
@@ -194,6 +197,7 @@ impl Default for Config {
                 request_timeout: 10,
                 incremental_scan: true,
                 incremental_interval: 60,
+                max_ips_per_cidr: 10,
             },
             github: GithubConfig {
                 meta_url: "https://api.github.com/meta".to_string(),

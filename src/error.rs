@@ -65,6 +65,12 @@ impl From<crate::http::HttpError> for RusherError {
     }
 }
 
+impl From<config::ConfigError> for RusherError {
+    fn from(error: config::ConfigError) -> Self {
+        RusherError::ConfigError(format!("配置错误: {}", error))
+    }
+}
+
 /// 错误转换工具
 pub trait ErrorExt<T> {
     /// 将错误转换为 RusherError

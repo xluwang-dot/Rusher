@@ -63,6 +63,8 @@ pub struct HttpRequest {
     pub follow_redirects: bool,
     /// 最大重定向次数
     pub max_redirects: usize,
+    /// DNS 解析覆盖（将域名映射到指定 IP）
+    pub resolve: Option<String>,
 }
 
 impl HttpRequest {
@@ -79,6 +81,7 @@ impl HttpRequest {
             connect_timeout: None,
             follow_redirects: true,
             max_redirects: 10,
+            resolve: None,
         })
     }
     
@@ -95,6 +98,7 @@ impl HttpRequest {
             connect_timeout: None,
             follow_redirects: true,
             max_redirects: 10,
+            resolve: None,
         })
     }
     
@@ -131,6 +135,12 @@ impl HttpRequest {
     /// 设置请求体
     pub fn with_body(mut self, body: Vec<u8>) -> Self {
         self.body = Some(body);
+        self
+    }
+    
+    /// 设置 DNS 解析覆盖
+    pub fn with_resolve(mut self, resolve: impl Into<String>) -> Self {
+        self.resolve = Some(resolve.into());
         self
     }
     

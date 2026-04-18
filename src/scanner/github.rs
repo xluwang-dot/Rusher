@@ -105,9 +105,32 @@ impl GithubApiClient {
         })
     }
 
-    /// 获取 GitHub IP 范围
+    /// 获取 GitHub IP 范围（结构化）
+    pub async fn get_ip_ranges_structured(&self) -> Result<GithubMetaResponse> {
+        info!("获取 GitHub IP 范围（结构化）");
+        
+        // 首先检查缓存
+        if let Some((response, cached_at)) = self.get_cached_response().await {
+            if cached_at.elapsed() < self.cache_ttl {
+                debug!("从缓存获取 IP 范围（结构化）");
+                return Ok(response.clone());
+            }
+        }
+        
+        // 从 API 获取
+        let response = self.fetch_ip_ranges_from_api().await?;
+        
+        // 更新缓存
+        self.update_cache(response.clone()).await;
+        
+        info!("获取到结构化 IP 范围");
+        
+        Ok(response)
+    }
+    
+    /// 获取 GitHub IP 范围（扁平化，向后兼容）
     pub async fn get_ip_ranges(&self) -> Result<Vec<String>> {
-        info!("获取 GitHub IP 范围");
+        info!("获取 GitHub IP 范围（扁平化）");
         
         // 首先检查缓存
         if let Some(ranges) = self.get_cached_ip_ranges().await {
@@ -145,6 +168,12 @@ impl GithubApiClient {
         self.update_cache(response).await;
         
         Ok(all_ranges)
+    }
+    
+    /// 从缓存获取结构化响应
+    async fn get_cached_response(&self) -> Option<(GithubMetaResponse, Instant)> {
+        let cache_guard = self.cache.read().await;
+        cache_guard.clone()
     }
 
     /// 从缓存获取 IP 范围

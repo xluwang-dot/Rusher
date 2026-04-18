@@ -117,6 +117,18 @@ pub async fn run_app(config: Config) -> Result<()> {
     // 启动扫描器
     scanner.start().await?;
     
+    // 等待一段时间让扫描器完成初始扫描
+    println!("等待扫描器完成初始扫描...");
+    tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+    
+    // 打印最优 IP 地址
+    println!("\n=== 扫描结果 ===");
+    scanner.print_optimal_ips().await;
+    
+    // 打印扫描统计信息
+    let stats = scanner.get_stats().await;
+    stats.print();
+    
     // 创建 DNS 缓存
     let dns_cache = Arc::new(dns::cache::DnsCache::new(config_arc.clone()));
     
@@ -162,5 +174,15 @@ pub async fn run_app(config: Config) -> Result<()> {
 /// 快速启动函数
 pub async fn quick_start() -> Result<()> {
     let config = init_app().await?;
+    run_app(config).await
+}
+
+/// 快速启动函数（带配置文件）
+pub async fn quick_start_with_config(config_path: Option<String>) -> Result<()> {
+    let config = if let Some(path) = config_path {
+        ConfigLoader::load_from_path(&path)?
+    } else {
+        init_app().await?
+    };
     run_app(config).await
 }

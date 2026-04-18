@@ -99,10 +99,50 @@ impl ConfigLoader {
             )));
         }
         
+        // 首先加载默认配置
+        let default_config = Config::default();
+        
+        // 然后加载指定配置文件
         let config = ConfigBuilder::builder()
+            // 添加默认值
+            .set_default("general.log_level", default_config.general.log_level.to_string())?
+            .set_default("general.log_file", default_config.general.log_file.unwrap_or_default())?
+            .set_default("general.daemon", default_config.general.daemon)?
+            .set_default("dns.listen_addr", default_config.dns.listen_addr.to_string())?
+            .set_default("dns.cache_ttl", default_config.dns.cache_ttl as i64)?
+            .set_default("dns.enable_ipv6", default_config.dns.enable_ipv6)?
+            .set_default("dns.upstream_dns", default_config.dns.upstream_dns.iter().map(|addr| addr.to_string()).collect::<Vec<_>>())?
+            .set_default("dns.doh_enabled", default_config.dns.doh_enabled)?
+            .set_default("dns.doh_endpoint", default_config.dns.doh_endpoint)?
+            .set_default("scanner.scan_interval", default_config.scanner.scan_interval as i64)?
+            .set_default("scanner.scan_timeout", default_config.scanner.scan_timeout as i64)?
+            .set_default("scanner.max_concurrent", default_config.scanner.max_concurrent as i64)?
+            .set_default("scanner.retry_count", default_config.scanner.retry_count as i64)?
+            .set_default("scanner.connect_timeout", default_config.scanner.connect_timeout as i64)?
+            .set_default("scanner.request_timeout", default_config.scanner.request_timeout as i64)?
+            .set_default("scanner.incremental_scan", default_config.scanner.incremental_scan)?
+            .set_default("scanner.incremental_interval", default_config.scanner.incremental_interval as i64)?
+            .set_default("scanner.max_ips_per_cidr", default_config.scanner.max_ips_per_cidr as i64)?
+            .set_default("github.meta_url", default_config.github.meta_url)?
+            .set_default("github.domains", default_config.github.domains)?
+            .set_default("github.custom_ranges", Vec::<String>::new())?
+            .set_default("github.api_auth_enabled", default_config.github.api_auth_enabled)?
+            .set_default("github.api_token", "")?
+            .set_default("http.user_agent", default_config.http.user_agent)?
+            .set_default("http.connection_pool_size", default_config.http.connection_pool_size as i64)?
+            .set_default("http.http2_enabled", default_config.http.http2_enabled)?
+            .set_default("http.compression_enabled", default_config.http.compression_enabled)?
+            .set_default("http.proxy", "")?
+            .set_default("cache.scan_cache_size", default_config.cache.scan_cache_size as i64)?
+            .set_default("cache.dns_cache_size", default_config.cache.dns_cache_size as i64)?
+            .set_default("cache.cache_expiry", default_config.cache.cache_expiry as i64)?
+            .set_default("monitoring.enabled", default_config.monitoring.enabled)?
+            .set_default("monitoring.port", default_config.monitoring.port as i64)?
+            .set_default("monitoring.path", default_config.monitoring.path)?
+            .set_default("monitoring.health_check", default_config.monitoring.health_check)?
+            // 然后添加配置文件
             .add_source(File::from(path))
-            .build()
-            .map_err(|e| RusherError::ConfigError(format!("配置构建失败: {}", e)))?;
+            .build()?;
         
         config.try_deserialize()
             .map_err(|e| RusherError::ConfigError(format!("配置反序列化失败: {}", e)))

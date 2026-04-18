@@ -105,7 +105,7 @@ async fn main() -> Result<()> {
                     println!("监听地址: {}", addr);
                 }
                 // 启动服务
-                quick_start().await?;
+                rusher::quick_start_with_config(cli.config).await?;
             }
             Commands::Stop => {
                 println!("停止 Rusher 服务...");

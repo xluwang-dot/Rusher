@@ -80,10 +80,7 @@ debug = true
 [profile.test]
 opt-level = 0
 debug = true
+
 [[bin]]
 name = "rusher"
 path = "src/main.rs"
-
-[[bin]]
-name = "dns-test"
-path = "tests/dns_test.rs"

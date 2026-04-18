@@ -20,6 +20,7 @@ connect_timeout = 3
 request_timeout = 5
 incremental_scan = true
 incremental_interval = 30
+max_ips_per_cidr = 5
 
 [github]
 meta_url = "https://api.github.com/meta"
